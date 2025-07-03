@@ -11,18 +11,28 @@ export function useCatechism(searchQuery) {
     // If it's a number search, look for exact or partial number match
     if (/^\d+$/.test(searchTerm)) {
       return lessons.flatMap(lesson => 
-        lesson.questions.filter(q => 
-          q.number.toString().includes(searchTerm)
-        )
+        lesson.questions
+          .filter(q => q.number.toString().includes(searchTerm))
+          .map(q => ({
+            ...q,
+            lesson_number: lesson.lesson_number,
+            lesson_title: lesson.lesson_title
+          }))
       );
     }
     
     // Simple case-insensitive text search across questions and answers
     return lessons.flatMap(lesson => 
-      lesson.questions.filter(q => 
-        q.question.toLowerCase().includes(searchTerm) || 
-        q.answer.toLowerCase().includes(searchTerm)
-      )
+      lesson.questions
+        .filter(q => 
+          q.question.toLowerCase().includes(searchTerm) || 
+          q.answer.toLowerCase().includes(searchTerm)
+        )
+        .map(q => ({
+          ...q,
+          lesson_number: lesson.lesson_number,
+          lesson_title: lesson.lesson_title
+        }))
     );
   }, [searchQuery, lessons]);
 
